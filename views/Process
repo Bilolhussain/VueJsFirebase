@@ -1,0 +1,56 @@
+<template>
+  <p>Process Payroll</p>
+  <!-- <h1>{{ user.displayName }} </h1> -->
+  <h1>{{ docs }} </h1>
+</template>
+
+<script>
+import getUser from '@/composables/getUser'
+import { ref, onMounted, watch } from 'vue'
+import { projectFirestore, projectAuth } from '@/firebase/config'
+import { useRouter, useRoute } from 'vue-router'
+
+export default {
+    setup() {
+    const { user } = getUser();
+
+    watch(()=> user, () => returnUser())
+
+    const lastName = ref("");
+    const firstName = ref("");
+    const docs = ref("");
+
+    // const returnUser = async () => {
+    //   const res = await projectFirestore
+    //     .collection("users")
+    //     .where("displayName", "==", "Abe")
+    //     .get();
+    //   if (!error.value) {
+    //     // check your response here.
+    //     console.log(res);
+    //     const doc = res.filter((userObj) => {
+    //       if ("Abe" === userObj.data().displayName) {
+    //         return userObj.data().lastName;
+    //       }
+    //     });
+    //     docs.value = doc;
+    //   }
+    // }
+    const returnUser = async () => {
+        const res = await projectFirestore
+            .collection("users")
+            .where("displayName", "==", "Abe") // Case sensitive
+            .get();
+
+        const lastNameList = res.docs.map(d => `Abe ${d.data().lastName}`)
+        console.log(lastNameList)
+        console.log(user)
+        docs.value = lastNameList;
+    }
+
+    onMounted(returnUser)
+
+    return { docs, returnUser};
+  },
+}
+</script>
